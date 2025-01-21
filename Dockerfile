@@ -5,10 +5,9 @@ RUN apk add --no-cache nodejs npm
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-RUN npm install -g pnpm
-RUN npm install -g typescript
 
-RUN pnpm install
+RUN npm install --production && npm install -g pnpm
+RUN npm install -g typescript && pnpm install --only=production
 
 COPY . .
 
