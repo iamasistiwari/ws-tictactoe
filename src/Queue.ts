@@ -25,12 +25,16 @@ export default class CustomQueue<T> {
       this.index++;
     }
   }
-  
+
   getQueue(): (T | null)[] {
     return [...this.arr];
   }
 
-  private isFull(): boolean {
+  getFirstElement(): T | null {
+    return this.arr[0];
+  }
+
+  isFull(): boolean {
     return this.size === this.maxSize;
   }
 }

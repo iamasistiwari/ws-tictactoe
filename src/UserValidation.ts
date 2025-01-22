@@ -12,7 +12,7 @@ const formatter = new Intl.DateTimeFormat('en-IN', {
   dateStyle: 'short',
 });
 
-export default function validation(token: string) {
+export default function ValidateUser(token: string) {
     const time = formatter.format(new Date());
     const hashedString = hashStringWithSecret(time);
     if(hashedString === token){

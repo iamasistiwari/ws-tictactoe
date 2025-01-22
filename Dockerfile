@@ -6,12 +6,13 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install --production && npm install -g pnpm
-RUN npm install -g typescript && pnpm install --only=production
+RUN npm install -g pnpm
+RUN npm install -g typescript 
+RUN pnpm install
 
 COPY . .
 
-RUN pnpm run build
+RUN pnpm build
 
 EXPOSE 8080
 
