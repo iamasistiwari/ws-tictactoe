@@ -22,6 +22,9 @@ export default class Game {
   private currentPlayer: WebSocket;
   private playerOneQueue: CustomQueue<number>;
   private playerTwoQueue: CustomQueue<number>;
+  private playerOneLastElement: number | null;
+  private playerTwoLastElement: number | null;
+  private totalPlayedMoves: number;
 
   constructor(playerOne: WebSocket, playerTwo: WebSocket) {
     this.state = Array(9).fill(null);
@@ -31,6 +34,27 @@ export default class Game {
     this.currentPlayer = this.playerOne;
     this.playerOneQueue = new CustomQueue<number>();
     this.playerTwoQueue = new CustomQueue<number>();
+    this.playerOneLastElement = null;
+    this.playerTwoLastElement = null;
+    this.totalPlayedMoves = 0;
+  }
+
+  onExit(socket: WebSocket){
+    if(socket === this.playerOne){
+      this.playerTwo.send(
+        JSON.stringify({
+          type: 'gameEnd',
+          message: 'Congratulations You won opponent exited',
+        })
+      );
+    }else{
+      this.playerOne.send(
+        JSON.stringify({
+          type: 'gameEnd',
+          message: 'Congratulations You won opponent exited',
+        })
+      );
+    }
   }
 
   makeMove(index: number, socket: WebSocket) {
@@ -38,15 +62,17 @@ export default class Game {
       socket.send(JSON.stringify({ type: 'error', message: 'Invalid Move' }));
       return;
     }
-    if(socket !== this.currentPlayer){
-      socket.send(JSON.stringify({ type: 'error', message: 'Invalid Player' }));
+    if (socket !== this.currentPlayer) {
+      socket.send(JSON.stringify({ type: 'error', message: 'Wait! For Opponents Move' }));
       return;
     }
 
     if (this.currentPlayer === this.playerOne) {
       this.playerOneQueue.add(index);
-    }else {
+      this.totalPlayedMoves++;
+    } else {
       this.playerTwoQueue.add(index);
+      this.totalPlayedMoves++;
     }
     const playerOneArray = this.playerOneQueue.getQueue() as (number | null)[];
     const playerTwoArray = this.playerTwoQueue.getQueue() as (number | null)[];
@@ -74,23 +100,37 @@ export default class Game {
       this.currentPlayer = this.playerOne;
       this.currentMove = 'X';
     }
-
-    this.playerOne.send(JSON.stringify({ type: 'state', state: this.state }));
-    this.playerTwo.send(JSON.stringify({ type: 'state', state: this.state }));
-
-    const isPlayerOneQueueFull = this.playerOneQueue.isFull()
-    if(isPlayerOneQueueFull){
-      const firstElement = this.playerOneQueue.getFirstElement();
-      this.playerOne.send(
-        JSON.stringify({ type: 'queue', firstElement })
-      );
+    
+    const isPlayerOneQueueFull = this.playerOneQueue.isFull();
+    if (isPlayerOneQueueFull) {
+      this.playerOneLastElement = this.playerOneQueue.getFirstElement();
     }
 
-    const isPlayerTwoQueueFull = this.playerTwoQueue.isFull()
-    if(isPlayerTwoQueueFull){
-      const firstElement = this.playerTwoQueue.getFirstElement();
-      this.playerTwo.send(JSON.stringify({ type: 'queue', firstElement }));
+    const isPlayerTwoQueueFull = this.playerTwoQueue.isFull();
+    if (isPlayerTwoQueueFull) {
+      this.playerTwoLastElement = this.playerTwoQueue.getFirstElement();
     }
+
+    this.playerOne.send(
+      JSON.stringify({
+        type: 'state',
+        state: this.state,
+        totalMoves: this.totalPlayedMoves,
+        currentMove: this.currentMove,
+        playerOneLastEle: this.playerOneLastElement,
+        playerTwoLastEle: this.playerTwoLastElement,
+      })
+    );
+    this.playerTwo.send(
+      JSON.stringify({
+        type: 'state',
+        state: this.state,
+        totalMoves: this.totalPlayedMoves,
+        currentMove: this.currentMove,
+        playerOneLastEle: this.playerOneLastElement,
+        playerTwoLastEle: this.playerTwoLastElement,
+      })
+    );
 
     if (this.isPlayerOneWinner()) {
       this.playerOne.send(
@@ -122,7 +162,7 @@ export default class Game {
       );
       this.resetGame();
     }
-    return true;
+    return true; 
   }
 
   private getState(): CellValue[] {
@@ -135,6 +175,9 @@ export default class Game {
     this.currentPlayer = this.playerOne;
     this.playerOneQueue = new CustomQueue<number>();
     this.playerTwoQueue = new CustomQueue<number>();
+    this.playerOneLastElement = null;
+    this.playerTwoLastElement = null;
+    this.totalPlayedMoves = 0;
   }
 
   private isPlayerOneWinner(): boolean {
