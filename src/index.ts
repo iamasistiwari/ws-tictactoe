@@ -34,9 +34,11 @@ interface SendData {
 const Manager = new GameManager();
 
 wss.on('connection', (socket, request) => {
+  console.log("hi request came")
   try {
     const queryParams = new URLSearchParams(request.url?.split('?')[1]);
     const token = queryParams.get('token');
+    console.log("here is your token:" , token)
     if (!token) {
       socket.send(JSON.stringify({ type: 'error', message: 'invalid token' }));
       return;
