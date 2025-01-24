@@ -9,10 +9,10 @@ const PORT = 7079;
 
 const serverOptions = {
   key: fs.readFileSync(
-    '/etc/letsencrypt/live/tictactoews.ashishtiwari.net/privkey.pem'
+    '/etc/certs/privkey.pem'
   ),
   cert: fs.readFileSync(
-    '/etc/letsencrypt/live/tictactoews.ashishtiwari.net/fullchain.pem'
+    '/etc/certs/fullchain.pem'
   ),
 };
 
