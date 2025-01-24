@@ -2,24 +2,30 @@ import { WebSocketServer, WebSocket } from 'ws';
 import GameManager from './GameManager';
 import dotenv from 'dotenv';
 import ValidateUser from './UserValidation';
+import fs from 'fs';
+import https from 'https';
 dotenv.config();
-import fs from 'fs'
+const PORT = 7079;  
 
-let serverOptions;
-try {
-  const keyPath = process.env.SSL_KEY_PATH || '/keys/server.key';
-  const certPath = process.env.SSL_CERT_PATH || '/keys/server.crt';
-  serverOptions = {
-    key: fs.readFileSync(keyPath),
-    cert: fs.readFileSync(certPath),
-  };
-} catch (error) {
-  console.error('Error reading SSL files', error);
-}
+const serverOptions = {
+  key: fs.readFileSync(
+    '/etc/letsencrypt/live/tictactoews.ashishtiwari.net/privkey.pem'
+  ),
+  cert: fs.readFileSync(
+    '/etc/letsencrypt/live/tictactoews.ashishtiwari.net/fullchain.pem'
+  ),
+};
+
+const httpsServer = https.createServer(serverOptions);
+const wss = new WebSocketServer({server: httpsServer });
+
+httpsServer.listen(7079, () => {
+  console.log(
+    'Secure WebSocket server is running on wss://tictactoews.ashishtiwari.net:7079'
+  );
+});
 
 
-
-const wss = new WebSocketServer({ port: 7079, host: '0.0.0.0', ...serverOptions});
 export const joinedRooms: Map<WebSocket, { joinRooms: string[] }> = new Map();
 
 interface ParsedData {

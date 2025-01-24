@@ -2,7 +2,7 @@ FROM alpine:3.20
 
 RUN apk add --no-cache nodejs npm
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
 
