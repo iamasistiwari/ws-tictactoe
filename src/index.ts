@@ -3,8 +3,23 @@ import GameManager from './GameManager';
 import dotenv from 'dotenv';
 import ValidateUser from './UserValidation';
 dotenv.config();
+import fs from 'fs'
 
-const wss = new WebSocketServer({ port: 7079, host: '0.0.0.0'});
+let serverOptions;
+try {
+  const keyPath = process.env.SSL_KEY_PATH || '/keys/server.key';
+  const certPath = process.env.SSL_CERT_PATH || '/keys/server.crt';
+  serverOptions = {
+    key: fs.readFileSync(keyPath),
+    cert: fs.readFileSync(certPath),
+  };
+} catch (error) {
+  console.error('Error reading SSL files', error);
+}
+
+
+
+const wss = new WebSocketServer({ port: 7079, host: '0.0.0.0', ...serverOptions});
 export const joinedRooms: Map<WebSocket, { joinRooms: string[] }> = new Map();
 
 interface ParsedData {
@@ -34,11 +49,10 @@ interface SendData {
 const Manager = new GameManager();
 
 wss.on('connection', (socket, request) => {
-  console.log("hi request came")
+  console.log("request came")
   try {
     const queryParams = new URLSearchParams(request.url?.split('?')[1]);
     const token = queryParams.get('token');
-    console.log("here is your token:" , token)
     if (!token) {
       socket.send(JSON.stringify({ type: 'error', message: 'invalid token' }));
       return;
