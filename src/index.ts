@@ -34,17 +34,21 @@ interface SendData {
 const Manager = new GameManager();
 
 wss.on('connection', (socket, request) => {
-  // const queryParams = new URLSearchParams(request.url?.split('?')[1])
-  // const token = queryParams.get('token')
-  // if(!token){
-  //   socket.send(JSON.stringify({type: 'error', message: "invalid token"}))
-  //   return
-  // }
-  // const validatedRequest = ValidateUser(token)
-  // if(!validatedRequest){
-  //   socket.send(JSON.stringify({ type: 'error', message: 'invalid token' }));
-  //   return
-  // }
+  try {
+    const queryParams = new URLSearchParams(request.url?.split('?')[1]);
+    const token = queryParams.get('token');
+    if (!token) {
+      socket.send(JSON.stringify({ type: 'error', message: 'invalid token' }));
+      return;
+    }
+    const validatedRequest = ValidateUser(token);
+    if (!validatedRequest) {
+      socket.send(JSON.stringify({ type: 'error', message: 'invalid token' }));
+      return;
+    }
+  } catch (error) {
+    console.log();
+  }
 
   joinedRooms.set(socket, { joinRooms: [] });
 
@@ -61,7 +65,6 @@ wss.on('connection', (socket, request) => {
         Manager.makeMove(data.move, data.roomId, socket);
         return;
       }
-
     } catch (error) {
       return socket.send(
         JSON.stringify({
@@ -74,5 +77,6 @@ wss.on('connection', (socket, request) => {
 
   socket.on('close', () => {
     Manager.handleClose(socket);
+    joinedRooms.delete(socket)
   });
 });

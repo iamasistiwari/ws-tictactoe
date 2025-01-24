@@ -39,15 +39,15 @@ export default class Game {
     this.totalPlayedMoves = 0;
   }
 
-  onExit(socket: WebSocket){
-    if(socket === this.playerOne){
+  onExit(socket: WebSocket) {
+    if (socket === this.playerOne) {
       this.playerTwo.send(
         JSON.stringify({
           type: 'gameEnd',
           message: 'Congratulations You won opponent exited',
         })
       );
-    }else{
+    } else {
       this.playerOne.send(
         JSON.stringify({
           type: 'gameEnd',
@@ -63,7 +63,9 @@ export default class Game {
       return;
     }
     if (socket !== this.currentPlayer) {
-      socket.send(JSON.stringify({ type: 'error', message: 'Wait! For Opponents Move' }));
+      socket.send(
+        JSON.stringify({ type: 'error', message: 'Wait! For Opponents Move' })
+      );
       return;
     }
 
@@ -100,7 +102,7 @@ export default class Game {
       this.currentPlayer = this.playerOne;
       this.currentMove = 'X';
     }
-    
+
     const isPlayerOneQueueFull = this.playerOneQueue.isFull();
     if (isPlayerOneQueueFull) {
       this.playerOneLastElement = this.playerOneQueue.getFirstElement();
@@ -162,7 +164,7 @@ export default class Game {
       );
       this.resetGame();
     }
-    return true; 
+    return true;
   }
 
   private getState(): CellValue[] {

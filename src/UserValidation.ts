@@ -1,6 +1,6 @@
-import CryptoJS from 'crypto-js'; 
+import CryptoJS from 'crypto-js';
 import dotenv from 'dotenv';
-dotenv.config(); 
+dotenv.config();
 
 function hashStringWithSecret(input: string): string {
   const secretKey = process.env.SECRET_KEY!;
@@ -13,10 +13,10 @@ const formatter = new Intl.DateTimeFormat('en-IN', {
 });
 
 export default function ValidateUser(token: string) {
-    const time = formatter.format(new Date());
-    const hashedString = hashStringWithSecret(time);
-    if(hashedString === token){
-      return true
-    }
-    return false
+  const time = formatter.format(new Date());
+  const hashedString = hashStringWithSecret(time);
+  if (hashedString === token) {
+    return true;
+  }
+  return false;
 }

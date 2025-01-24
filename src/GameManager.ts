@@ -1,36 +1,31 @@
+import { WebSocket } from 'ws';
 import { joinedRooms } from '.';
 import Game from './Game';
-import { WebSocket } from 'ws';
 const rooms: Map<string, { players: WebSocket[] }> = new Map();
 const playingRooms: Map<string, { Game: Game }> = new Map();
 
 export default class GameManager {
   constructor() {}
 
-  handleClose(socket: WebSocket){
-    const user = joinedRooms.get(socket)
-    if(user && user.joinRooms.length !== 0){
-      //handle rooms
+  handleClose(socket: WebSocket) {
+    const user = joinedRooms.get(socket);
+    if (user && user.joinRooms.length !== 0) {
       user.joinRooms.forEach((room) => {
-        const getRoom = rooms.get(room)
-        if(getRoom){
+        const getRoom = rooms.get(room);
+        if (getRoom) {
           getRoom.players = getRoom.players.filter((user) => user !== socket);
-          if(getRoom.players.length === 0){
-            rooms.delete(room)
+          if (getRoom.players.length === 0) {
+            rooms.delete(room);
           }
         }
-        
-      })
-
-      //handle game rooms
+      });
       user.joinRooms.forEach((room) => {
-        const getPlayingRoom = playingRooms.get(room)
-        if(getPlayingRoom){
-          getPlayingRoom.Game.onExit(socket)
-          playingRooms.delete(room)
+        const getPlayingRoom = playingRooms.get(room);
+        if (getPlayingRoom) {
+          getPlayingRoom.Game.onExit(socket);
+          playingRooms.delete(room);
         }
-      })
-
+      });
     }
   }
 
@@ -52,9 +47,9 @@ export default class GameManager {
     const room = rooms.get(roomId);
 
     if (room && room.players.length < 2) {
-      const player = joinedRooms.get(socket)
-      if(player){
-        player.joinRooms.push(roomId)
+      const player = joinedRooms.get(socket);
+      if (player) {
+        player.joinRooms.push(roomId);
       }
       room.players.push(socket);
       socket.send(JSON.stringify({ type: 'joined' }));
