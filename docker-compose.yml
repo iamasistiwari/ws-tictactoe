@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  your-app:
+    build: .
+    volumes:
+      - /home/administrator/keys:/keys
+    ports:
+      - "443:443"
+    environment:
+      - SSL_KEY_PATH=/keys/server.key
+      - SSL_CERT_PATH=/keys/server.crt
