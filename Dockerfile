@@ -11,8 +11,6 @@ RUN npm install -g typescript
 RUN pnpm install
 
 COPY . .
-COPY /home/administrator/keys /keys
-
 
 RUN pnpm build
 
