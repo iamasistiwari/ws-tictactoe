@@ -5,26 +5,25 @@ import ValidateUser from './UserValidation';
 import fs from 'fs';
 import https from 'https';
 dotenv.config();
-const PORT = 7079;  
+const PORT = process.env.PORT || 7079;
+const SSL_KEY_PATH = process.env.SSL_KEY_PATH || '/etc/certs/privkey.pem';
+const SSL_CERT_PATH = process.env.SSL_CERT_PATH || '/etc/certs/fullchain.pem';
+
 
 const serverOptions = {
-  key: fs.readFileSync(
-    '/etc/certs/privkey.pem'
-  ),
-  cert: fs.readFileSync(
-    '/etc/certs/fullchain.pem'
-  ),
+  key: fs.readFileSync(SSL_KEY_PATH),
+  cert: fs.readFileSync(SSL_CERT_PATH),
 };
 
 const httpsServer = https.createServer(serverOptions);
-const wss = new WebSocketServer({server: httpsServer });
+const wss = new WebSocketServer({ server: httpsServer });
+
 
 httpsServer.listen(7079, () => {
   console.log(
     'Secure WebSocket server is running on wss://tictactoews.ashishtiwari.net:7079'
   );
 });
-
 
 export const joinedRooms: Map<WebSocket, { joinRooms: string[] }> = new Map();
 
