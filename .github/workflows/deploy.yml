@@ -1,4 +1,4 @@
-name: Build and Deploy to Docker Hub
+name: Build and Deploy to Docker Hub & VPS
 
 on:
   push:
@@ -28,3 +28,16 @@ jobs:
 
     - name: Verify Pushed Image
       run: docker pull asisserver/tictactoews:latest
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@main
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PASSWORD }}
+        script: |
+          sudo docker pull asisserver/tictactoews:latest
+          sudo docker stop tictactoews || true
+          sudo docker rm tictactoews || true
+          sudo docker run -d --name tictactoews -p 7079:7079 --restart always \
+          -e SECRET_KEY=${{ secrets.SECRET_KEY }} asisserver/tictactoews:latest
