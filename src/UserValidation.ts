@@ -10,7 +10,7 @@ function hashStringWithSecret(input: string): string {
 const formatter = new Intl.DateTimeFormat('en-IN', {
   timeZone: 'Asia/Kolkata',
   timeStyle: 'short',
-  dateStyle: 'short',
+  dateStyle: 'medium',
 });
 
 export default function ValidateUser(token: string) {
