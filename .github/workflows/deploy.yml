@@ -37,8 +37,8 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }} 
         script: |
-          sudo docker pull asisserver/tictactoews:latest
-          sudo docker stop tictactoews || true
-          sudo docker rm tictactoews || true
-          sudo docker run -d --name tictactoews -p 7079:7079 --restart always \
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull asisserver/tictactoews:latest
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker stop tictactoews || true
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker rm tictactoews || true
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker run -d --name tictactoews -p 7079:7079 --restart always \
           -e SECRET_KEY=${{ secrets.SECRET_KEY }} asisserver/tictactoews:latest
