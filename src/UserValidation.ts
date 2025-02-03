@@ -7,10 +7,14 @@ function hashStringWithSecret(input: string): string {
   console.log("KEY", secretKey)
   return CryptoJS.HmacSHA256(input, secretKey).toString(CryptoJS.enc.Hex);
 }
-const formatter = new Intl.DateTimeFormat('en-IN', {
+const formatter = new Intl.DateTimeFormat('en-US', {
   timeZone: 'Asia/Kolkata',
-  timeStyle: 'short',
-  dateStyle: 'medium',
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  hour12: true,
 });
 
 export default function ValidateUser(token: string) {
