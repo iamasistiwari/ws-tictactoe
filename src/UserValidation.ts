@@ -4,7 +4,6 @@ dotenv.config();
 
 function hashStringWithSecret(input: string): string {
   const secretKey = process.env.SECRET_KEY!;
-  console.log("KEY", secretKey)
   return CryptoJS.HmacSHA256(input, secretKey).toString(CryptoJS.enc.Hex);
 }
 const formatter = new Intl.DateTimeFormat('en-US', {
@@ -19,9 +18,7 @@ const formatter = new Intl.DateTimeFormat('en-US', {
 
 export default function ValidateUser(token: string) {
   const time = formatter.format(new Date());
-  console.log('time', time);
   const hashedString = hashStringWithSecret(time);
-  console.log("hash",hashedString)
   if (hashedString === token) {
     return true;
   }
