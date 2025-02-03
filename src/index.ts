@@ -40,17 +40,16 @@ wss.on('connection', (socket, request) => {
     const token = queryParams.get('token');
     if (!token) {
       socket.send(JSON.stringify({ type: 'error', message: 'invalid token' }));
-      socket.close()
+      socket.close();
       return;
     }
     const validatedRequest = ValidateUser(token);
     if (!validatedRequest) {
       socket.send(JSON.stringify({ type: 'error', message: 'invalid token' }));
-      socket.close()
+      socket.close();
       return;
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 
   joinedRooms.set(socket, { joinRooms: [] });
 
@@ -79,6 +78,6 @@ wss.on('connection', (socket, request) => {
 
   socket.on('close', () => {
     Manager.handleClose(socket);
-    joinedRooms.delete(socket)
+    joinedRooms.delete(socket);
   });
 });
