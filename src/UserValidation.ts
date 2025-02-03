@@ -15,6 +15,7 @@ const formatter = new Intl.DateTimeFormat('en-IN', {
 
 export default function ValidateUser(token: string) {
   const time = formatter.format(new Date());
+  console.log('time', time);
   const hashedString = hashStringWithSecret(time);
   console.log("hash",hashedString)
   if (hashedString === token) {
